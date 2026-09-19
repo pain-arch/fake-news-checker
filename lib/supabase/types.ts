@@ -52,3 +52,11 @@ export type HomeArticle = Pick<Article, "id" | "original_url" | "title" | "image
   right_percentage: number;
   confidence: number | null;
 };
+
+export type DetailArticle = Pick<Article, "id" | "original_url" | "title" | "image_url" | "published_at" | "category" | "location" | "raw_text"> & {
+  source_name: Source["name"];
+  analysis: Pick<ArticleAnalysis,
+    "summary" | "sentiment_score" | "sentiment_label" | "bias_score" | "bias_label" |
+    "left_percentage" | "center_percentage" | "right_percentage" | "confidence" |
+    "framing_notes" | "loaded_terms" | "disclaimer" | "model">;
+};

@@ -10,40 +10,32 @@ export function MobileNav() {
 
   return (
     <>
-      <span className="menu-mark" aria-hidden="true" onClick={() => setIsOpen(true)} style={{ cursor: 'pointer' }}>
+      <button type="button" className="menu-mark" aria-label="Open menu" aria-expanded={isOpen} onClick={() => setIsOpen(true)}>
         <Icon name="menu" className="size-5" />
-      </span>
+      </button>
 
-      {isOpen && (
+      {isOpen ? (
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm" onClick={() => setIsOpen(false)}>
-          <div 
-            className="fixed inset-y-0 left-0 w-3/4 max-w-sm bg-[#fafaf9] p-6 shadow-xl border-r border-[#cfcfcf] sm:w-[385px] flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="fixed inset-y-0 left-0 w-3/4 max-w-sm bg-[#fafaf9] p-6 shadow-xl border-r border-[#cfcfcf] sm:w-[385px] flex flex-col" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-center justify-between mb-8">
-              <Link href="/" onClick={() => setIsOpen(false)} aria-label="Fake or Real home">
-                <BrandMark compact />
-              </Link>
-              <button onClick={() => setIsOpen(false)} aria-label="Close menu" className="p-2 -mr-2 text-[#252525]">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-6"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+              <Link href="/" onClick={() => setIsOpen(false)} aria-label="Biasly home"><BrandMark compact /></Link>
+              <button type="button" onClick={() => setIsOpen(false)} aria-label="Close menu" className="p-2 -mr-2 text-[#252525]">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-6" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
-            
-            <nav className="flex flex-col gap-6 text-[15px] font-medium text-[#252525]">
+            <nav aria-label="Mobile navigation" className="flex flex-col gap-6 text-[15px] font-medium text-[#252525]">
               <Link href="/" onClick={() => setIsOpen(false)} className="pb-2 border-b border-[#e5e5e5]">Home</Link>
-              <Link href="#" onClick={() => setIsOpen(false)} className="pb-2 border-b border-[#e5e5e5]">For You</Link>
-              <Link href="#" onClick={() => setIsOpen(false)} className="pb-2 border-b border-[#e5e5e5]">Local</Link>
-              <Link href="#" onClick={() => setIsOpen(false)} className="pb-2 border-b border-[#e5e5e5]">Blindspot</Link>
+              <span className="pb-2 border-b border-[#e5e5e5]">For You</span>
+              <span className="pb-2 border-b border-[#e5e5e5]">Local</span>
+              <span className="pb-2 border-b border-[#e5e5e5]">Blindspot</span>
             </nav>
-
-            <div className="mt-auto pt-8 flex flex-col gap-3">
-              <button className="bg-[#292929] text-white rounded-[4px] h-[40px] font-semibold w-full flex items-center justify-center text-[13px]">Subscribe</button>
-              <button className="border border-[#292929] text-[#292929] bg-transparent rounded-[4px] h-[40px] font-semibold w-full flex items-center justify-center text-[13px]">Login</button>
+            <div className="mt-auto pt-8 flex flex-col gap-3" aria-label="Future account options">
+              <span className="bg-[#292929] text-white rounded-[4px] h-[40px] font-semibold w-full flex items-center justify-center text-[13px]">Subscribe</span>
+              <span className="border border-[#292929] text-[#292929] bg-transparent rounded-[4px] h-[40px] font-semibold w-full flex items-center justify-center text-[13px]">Login</span>
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   );
 }
-

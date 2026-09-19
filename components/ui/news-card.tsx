@@ -1,6 +1,6 @@
 import { ArticleImage } from "./article-image";
 import { BiasMeter } from "./bias-meter";
-import { Icon } from "./icon";
+import Link from "next/link";
 import type { HomeArticle } from "@/lib/supabase/types";
 
 const dateFormatter = new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
@@ -11,10 +11,9 @@ export function NewsCard({ article }: { article: HomeArticle }) {
 
   return (
     <article className="news-card">
-      <a href={article.original_url} target="_blank" rel="noopener noreferrer" className="news-card-link" aria-label={`Read ${article.title} at ${article.source_name} (opens in a new tab)`}>
+      <Link href={`/news/${article.id}`} className="news-card-link" aria-label={`Read analysis of ${article.title}`}>
         <div className="news-card-image">
           <ArticleImage src={article.image_url} alt={article.title} />
-          <span className="image-info" aria-hidden="true"><Icon name="info" className="size-4" /></span>
         </div>
         <div className="news-card-content">
           <p className="news-card-kicker"><strong>{article.source_name}</strong>{details ? ` · ${details}` : ""}</p>
@@ -29,7 +28,7 @@ export function NewsCard({ article }: { article: HomeArticle }) {
             <p className="news-card-date">Published {published}</p>
           </div>
         </div>
-      </a>
+      </Link>
     </article>
   );
 }
