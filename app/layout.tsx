@@ -10,7 +10,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Biasly — Balanced news coverage, powered by AI",
+  title: "Fake or Real — News analysis, powered by AI",
   description:
     "A clear, reader-first view of news sentiment and AI-estimated political framing.",
 };

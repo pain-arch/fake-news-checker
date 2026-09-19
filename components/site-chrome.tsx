@@ -24,7 +24,7 @@ export function SiteHeader({ showTopics = false }: { showTopics?: boolean }) {
       <div className="primary-strip">
         <div className="page-container primary-strip-inner">
           <MobileNav />
-          <Link className="brand-link" href="/" aria-label="Biasly home"><BrandMark compact /></Link>
+          <Link className="brand-link" href="/" aria-label="Fake or Real home"><BrandMark compact /></Link>
           <nav aria-label="Primary navigation" className="primary-nav">
             <Link href="/" className={showTopics ? "active" : undefined} aria-current={showTopics ? "page" : undefined}>Home</Link>
             <span>For You</span><span>Local</span><span>Blindspot</span>
@@ -49,7 +49,7 @@ export function SiteFooter() {
         <div><h2>Help</h2><p>Help Center</p><p>Guides</p><p>Privacy Policy</p><p>Terms of Service</p></div>
         <div><h2>Connect</h2><div className="social-labels" aria-label="Social channels"><span>in</span></div></div>
       </div>
-      <div className="footer-bottom"><div className="page-container">© {new Date().getUTCFullYear()} Biasly News. All rights reserved.</div></div>
+      <div className="footer-bottom"><div className="page-container">© {new Date().getUTCFullYear()} Fake or Real. All rights reserved.</div></div>
     </footer>
   );
 }

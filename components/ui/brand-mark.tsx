@@ -9,10 +9,10 @@ export function BrandMark({ inverted = false, compact = false }: BrandMarkProps)
       className={`inline-flex flex-col font-bold leading-none tracking-[-0.06em] ${
         inverted ? "text-white" : "text-foreground"
       }`}
-      aria-label="Biasly News"
+      aria-label="Fake or Real"
     >
-      <span className={compact ? "text-[25px]" : "text-[56px] sm:text-[62px]"}>
-        biasly
+      <span className={compact ? "text-[22px] sm:text-[23px]" : "text-[48px] sm:text-[56px]"}>
+        Fake or Real
       </span>
     </div>
   );

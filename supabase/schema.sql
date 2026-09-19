@@ -1,4 +1,4 @@
--- Initial Biasly article schema. Apply in Supabase Dashboard > SQL Editor.
+-- Initial Fake or Real article schema. Apply in Supabase Dashboard > SQL Editor.
 -- The homepage reads these tables with a server-only service-role client.
 -- No anon/authenticated policies are created; browser clients cannot read or write them.
 
