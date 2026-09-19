@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { Icon } from "@/components/ui/icon";
 import { BrandMark } from "@/components/ui/brand-mark";
 
@@ -29,9 +30,12 @@ export function MobileNav() {
               <span className="pb-2 border-b border-[#e5e5e5]">Local</span>
               <span className="pb-2 border-b border-[#e5e5e5]">Blindspot</span>
             </nav>
-            <div className="mt-auto pt-8 flex flex-col gap-3" aria-label="Future account options">
-              <span className="bg-[#292929] text-white rounded-[4px] h-[40px] font-semibold w-full flex items-center justify-center text-[13px]">Subscribe</span>
-              <span className="border border-[#292929] text-[#292929] bg-transparent rounded-[4px] h-[40px] font-semibold w-full flex items-center justify-center text-[13px]">Login</span>
+            <div className="mt-auto pt-8 flex flex-col gap-3" aria-label="Account options">
+              <Show when="signed-out">
+                <SignUpButton mode="modal"><button type="button" onClick={() => setIsOpen(false)} className="bg-[#292929] text-white rounded-[4px] h-[40px] font-semibold w-full flex items-center justify-center text-[13px]">Sign up</button></SignUpButton>
+                <SignInButton mode="modal"><button type="button" onClick={() => setIsOpen(false)} className="border border-[#292929] text-[#292929] bg-transparent rounded-[4px] h-[40px] font-semibold w-full flex items-center justify-center text-[13px]">Log in</button></SignInButton>
+              </Show>
+              <Show when="signed-in"><UserButton /></Show>
             </div>
           </div>
         </div>

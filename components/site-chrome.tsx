@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { BrandMark } from "@/components/ui/brand-mark";
 import { Chip } from "@/components/ui/chip";
 import { MobileNav } from "@/components/ui/mobile-nav";
@@ -29,9 +30,12 @@ export function SiteHeader({ showTopics = false }: { showTopics?: boolean }) {
             <Link href="/" className={showTopics ? "active" : undefined} aria-current={showTopics ? "page" : undefined}>Home</Link>
             <span>For You</span><span>Local</span><span>Blindspot</span>
           </nav>
-          <div className="header-actions" aria-label="Future account options">
-            <span className="subscribe-label">Subscribe</span>
-            <span className="login-label">Login</span>
+          <div className="header-actions" aria-label="Account options">
+            <Show when="signed-out">
+              <SignUpButton mode="modal"><button type="button" className="subscribe-label">Sign up</button></SignUpButton>
+              <SignInButton mode="modal"><button type="button" className="login-label">Log in</button></SignInButton>
+            </Show>
+            <Show when="signed-in"><UserButton /></Show>
           </div>
         </div>
       </div>

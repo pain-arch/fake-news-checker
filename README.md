@@ -1,4 +1,12 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This is a Next.js news reader with Supabase article storage and Clerk authentication.
+
+## Authentication
+
+Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` from the [Clerk Dashboard](https://dashboard.clerk.com/~/api-keys). Set the same keys in your deployment environment.
+
+The homepage and article pages are public. **Sign up** and **Log in** in the header and mobile menu open Clerk dialogs. Signed-in users get an account button for profile management and sign out.
+
+Run `npm run typecheck`, `npm run lint`, and `npm run build` to verify the integration.
 
 ## Getting Started
 
