@@ -1,61 +1,10 @@
--- Fresh-install schema. For an existing database, run upgrade-data-access.sql instead.
--- All application reads and writes use a server-only service-role client.
-
-create table if not exists public.sources (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  listing_url text not null unique,
-  parser_strategy text,
-  is_active boolean not null default true,
-  logo_url text,
-  created_at timestamptz not null default now()
-);
+-- Repeatable upgrade from the original three-table schema. Does not delete data.
+begin;
 
 create index if not exists sources_active_idx
   on public.sources (name, id) where is_active = true;
-
-create table if not exists public.articles (
-  id uuid primary key default gen_random_uuid(),
-  source_id uuid not null references public.sources(id),
-  original_url text not null unique,
-  canonical_url text,
-  title text not null,
-  image_url text not null,
-  published_at timestamptz not null,
-  category text,
-  location text,
-  raw_text text not null,
-  scraped_at timestamptz not null default now(),
-  analyzed_at timestamptz
-);
-
-create unique index if not exists articles_canonical_url_unique
-  on public.articles (canonical_url) where canonical_url is not null;
-create index if not exists articles_published_at_idx
-  on public.articles (published_at desc);
 create index if not exists articles_analysis_queue_idx
   on public.articles (scraped_at, id);
-
-create table if not exists public.article_analyses (
-  id uuid primary key default gen_random_uuid(),
-  article_id uuid not null unique references public.articles(id) on delete cascade,
-  summary text not null,
-  sentiment_score numeric not null check (sentiment_score between -1 and 1),
-  sentiment_label text not null check (sentiment_label in ('positive', 'neutral', 'negative')),
-  bias_score numeric not null check (bias_score between -1 and 1),
-  bias_label text not null check (bias_label in ('left', 'center', 'right', 'mixed', 'unclear')),
-  left_percentage numeric not null check (left_percentage between 0 and 100),
-  center_percentage numeric not null check (center_percentage between 0 and 100),
-  right_percentage numeric not null check (right_percentage between 0 and 100),
-  confidence numeric not null check (confidence between 0 and 1),
-  framing_notes text not null,
-  loaded_terms text[] not null default '{}',
-  disclaimer text not null,
-  model text not null,
-  created_at timestamptz not null default now(),
-  constraint framing_percentages_sum check (left_percentage + center_percentage + right_percentage = 100),
-  constraint bias_score_matches_percentages check (bias_score = (right_percentage - left_percentage) / 100)
-);
 
 create table if not exists public.logs (
   id uuid primary key default gen_random_uuid(),
@@ -67,7 +16,6 @@ create table if not exists public.logs (
   details jsonb not null default '{}'::jsonb check (jsonb_typeof(details) = 'object'),
   created_at timestamptz not null default now()
 );
-
 create index if not exists logs_recent_idx on public.logs (created_at desc);
 
 create table if not exists public.oxylabs_schedules (
@@ -78,7 +26,6 @@ create table if not exists public.oxylabs_schedules (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-
 create index if not exists oxylabs_schedules_active_idx
   on public.oxylabs_schedules (source_id) where is_active = true;
 
@@ -95,7 +42,6 @@ create table if not exists public.oxylabs_schedule_runs (
   created_at timestamptz not null default now(),
   unique (schedule_id, oxylabs_job_id)
 );
-
 create index if not exists oxylabs_schedule_runs_recent_idx
   on public.oxylabs_schedule_runs (schedule_id, created_at desc);
 
@@ -106,7 +52,6 @@ alter table public.logs enable row level security;
 alter table public.oxylabs_schedules enable row level security;
 alter table public.oxylabs_schedule_runs enable row level security;
 
--- Default grants differ by project age. Lock down the Data API explicitly.
 revoke all on table public.sources, public.articles, public.article_analyses,
   public.logs, public.oxylabs_schedules, public.oxylabs_schedule_runs
   from public, anon, authenticated;
@@ -114,3 +59,5 @@ grant usage on schema public to service_role;
 grant select, insert, update, delete on table public.sources, public.articles,
   public.article_analyses, public.logs, public.oxylabs_schedules,
   public.oxylabs_schedule_runs to service_role;
+
+commit;

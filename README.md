@@ -1,5 +1,17 @@
 This is a Next.js news reader with Supabase article storage and Clerk authentication.
 
+## Supabase database
+
+Set `NEXT_PUBLIC_SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` in `.env.local` and in the deployment environment. Keep the service-role key server-only. The anon key is reserved for future client needs; current article reads and all writes use the server-only client.
+
+In Supabase Dashboard → SQL Editor, run `supabase/schema.sql` for a new database. For a database with the original `sources`, `articles`, and `article_analyses` tables, run `supabase/upgrade-data-access.sql` instead. The upgrade preserves existing rows and may be rerun. It expects the original three-table schema; if a table was customized, compare its columns and constraints before running it. No data cleanup is needed for the repository's original schema or QA seed. Ensure the `public` schema is exposed by the Data API for server queries.
+
+Run `supabase/verify-data-access.sql` next. Its temporary inserts are rolled back. The permission result should show six tables with RLS enabled and service-role access, while `anon` and `authenticated` have no direct table read access. The exact Oxylabs schedule and job IDs should remain unchanged. The pending-analysis query finds articles with no analysis row regardless of `analyzed_at`.
+
+For UI smoke testing, run `supabase/seed-qa-news.sql` if synthetic content is wanted, then `npm run dev` and open `http://localhost:3000` and `/news/e1400000-0000-4000-8000-000000000101`. Rerunning the seed must not create duplicates. Check the Home page and details page for the stored analysis. The QA source is inactive and is never selected by `getActiveSources()`.
+
+Server-only helpers live in `lib/supabase/queries/`: `sources.ts` reads active sources; `persistence.ts` checks URLs in chunks of 15 and inserts articles without replacement; `analyses.ts` finds missing analyses and saves valid results; `logs.ts` writes and lists logs; `schedules.ts` stores exact string IDs and lists schedules and runs. Pipeline routes are not part of this change.
+
 ## Authentication
 
 Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` from the [Clerk Dashboard](https://dashboard.clerk.com/~/api-keys). Set the same keys in your deployment environment.

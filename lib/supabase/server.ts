@@ -12,3 +12,9 @@ export function getSupabaseServerClient() {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 }
+
+export function requireSupabaseServerClient() {
+  const client = getSupabaseServerClient();
+  if (!client) throw new Error("Supabase server connection is not configured");
+  return client;
+}
