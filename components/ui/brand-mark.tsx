@@ -9,17 +9,10 @@ export function BrandMark({ inverted = false, compact = false }: BrandMarkProps)
       className={`inline-flex flex-col font-bold leading-none tracking-[-0.06em] ${
         inverted ? "text-white" : "text-foreground"
       }`}
-      aria-label="Biasly News"
+      aria-label="Fake or Real"
     >
       <span className={compact ? "text-[25px]" : "text-[56px] sm:text-[62px]"}>
-        biasly
-      </span>
-      <span
-        className={`self-end tracking-[-0.035em] ${
-          compact ? "-mt-0.5 text-[10px]" : "-mt-1 text-[18px] sm:text-[20px]"
-        } ${inverted ? "text-white/88" : "text-muted"}`}
-      >
-        News
+        fake or real
       </span>
     </div>
   );
