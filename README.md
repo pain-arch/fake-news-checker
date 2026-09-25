@@ -10,7 +10,28 @@ Run `supabase/verify-data-access.sql` next. Its temporary inserts are rolled bac
 
 For UI smoke testing, run `supabase/seed-qa-news.sql` if synthetic content is wanted, then `npm run dev` and open `http://localhost:3000` and `/news/e1400000-0000-4000-8000-000000000101`. Rerunning the seed must not create duplicates. Check the Home page and details page for the stored analysis. The QA source is inactive and is never selected by `getActiveSources()`.
 
-Server-only helpers live in `lib/supabase/queries/`: `sources.ts` reads active sources; `persistence.ts` checks URLs in chunks of 15 and inserts articles without replacement; `analyses.ts` finds missing analyses and saves valid results; `logs.ts` writes and lists logs; `schedules.ts` stores exact string IDs and lists schedules and runs. Pipeline routes are not part of this change.
+Server-only helpers live in `lib/supabase/queries/`: `sources.ts` reads active sources; `persistence.ts` checks URLs in chunks of 15 and inserts articles without replacement; `analyses.ts` finds missing analyses and saves valid results; `logs.ts` writes and lists logs; `schedules.ts` stores exact string IDs and lists schedules and runs.
+
+## Manual Oxylabs scraping
+
+Set `OXY_WSA_USERNAME`, `OXY_WSA_PASSWORD`, and `BIASLY_ADMIN_SECRET` in `.env.local` alongside the Supabase server variables. Start `npm run dev` and watch its terminal for scrape progress. `POST /api/scrape` loads active homepage URLs from Supabase, fetches homepage story cards and article details through Oxylabs, and inserts only valid new articles. It returns a run summary. Articles remain pending analysis until the analysis pipeline runs.
+
+From PowerShell, test authorization and run the default scrape with:
+
+```powershell
+curl.exe -i -X POST http://localhost:3000/api/scrape -H "Content-Type: application/json" -d "{}"
+$adminSecret = Read-Host "BIASLY_ADMIN_SECRET"
+curl.exe -i -X POST http://localhost:3000/api/scrape -H "Content-Type: application/json" -H "x-biasly-admin-secret: $adminSecret" -d "{}"
+```
+
+The first request should return 401. The second processes all active sources with a limit of five valid new articles per source. For a smaller run:
+
+```powershell
+$body = '{"sourceNames":["Reuters"],"limitPerSource":1}'
+$body | curl.exe -i -X POST http://localhost:3000/api/scrape -H "Content-Type: application/json" -H "x-biasly-admin-secret: $adminSecret" --data-binary '@-'
+```
+
+`sourceIds` is also accepted; `limitPerSource` must be 1–20. Check the returned counters, the Next.js terminal, and recent rows in Supabase `articles` and `logs`. Repeating a run should skip existing URLs rather than replace rows.
 
 ## Authentication
 
