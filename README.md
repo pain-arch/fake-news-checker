@@ -33,6 +33,39 @@ $body | curl.exe -i -X POST http://localhost:3000/api/scrape -H "Content-Type: a
 
 `sourceIds` is also accepted; `limitPerSource` must be 1–20. Check the returned counters, the Next.js terminal, and recent rows in Supabase `articles` and `logs`. Repeating a run should skip existing URLs rather than replace rows.
 
+## AI article analysis
+
+Set `OPENAI_API_KEY` and `BIASLY_ADMIN_SECRET` in `.env.local` alongside the Supabase server variables. `ANALYSIS_BATCH_SIZE` is optional and defaults to 5 (allowed range 1-20). The pipeline uses `gpt-6-luna`, sends bounded article text without the publisher name, validates structured output, stores the analysis, and only then sets `articles.analyzed_at`.
+
+Start `npm run dev` and watch its terminal for per-batch progress. First confirm that the public endpoint rejects an unauthenticated request:
+
+```powershell
+curl.exe -i -X POST http://localhost:3000/api/analyze -H "Content-Type: application/json" -d "{}"
+```
+
+It should return 401 without model calls or writes. Then load the admin secret into a shell variable and analyze one pending article:
+
+```powershell
+$adminSecret = Read-Host "BIASLY_ADMIN_SECRET"
+$body = '{"limit":1}'
+$body | curl.exe -i -X POST http://localhost:3000/api/analyze -H "Content-Type: application/json" -H "x-biasly-admin-secret: $adminSecret" --data-binary '@-'
+```
+
+To analyze specific pending articles, pass one or more unique UUIDs (up to 100):
+
+```powershell
+$body = '{"articleIds":["<article-uuid>"],"limit":1}'
+$body | curl.exe -i -X POST http://localhost:3000/api/analyze -H "Content-Type: application/json" -H "x-biasly-admin-secret: $adminSecret" --data-binary '@-'
+```
+
+After verifying the saved `article_analyses` row, percentage total, derived bias score, matching `analyzed_at`, homepage card, and details page, process every remaining valid pending article only when intended:
+
+```powershell
+curl.exe -i -X POST http://localhost:3000/api/analyze -H "Content-Type: application/json" -H "x-biasly-admin-secret: $adminSecret" -d "{}"
+```
+
+Repeat the request to confirm already analyzed articles are skipped and no duplicate analysis rows are created. The response includes analyzed, skipped, failed, batch, repaired-timestamp, duration, and failed-ID fields. Political framing shown by the UI is an AI estimate, not objective truth.
+
 ## Authentication
 
 Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` from the [Clerk Dashboard](https://dashboard.clerk.com/~/api-keys). Set the same keys in your deployment environment.
